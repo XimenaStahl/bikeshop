@@ -1,0 +1,176 @@
+<h1></h1>
+BICISHOP</h1>
+
+<div class="py-4">
+    <h2>Monitor de Inventarios</h2>
+
+  <hr />
+<table class="table">
+  {{!-- <thead class="thead-light">
+    <tr>
+      <th scope="col">Tienda</th>
+      <th scope="col">Categoría</th>
+      <th scope="col">Marca</th>
+      <th scope="col"></th>
+    </tr>
+  </thead> --}}
+  <tbody>
+      <tr>
+    <td scope="col">Tienda</td>
+      <td scope="col">Categoría</td>
+      <td scope="col">Marca</td>
+      <td scope="col"></td>
+      </tr>
+    <tr>
+      <td><select class="form-control" id="tienda"></select></td>
+      <td><select class="form-control" id="categoria"></select></td>
+      <td><select class="form-control" id="marca"></select></td>
+      <td><button type="button" id="btnBuscar" class="btn btn-primary">Buscar</button></td>
+    </tr>
+  </tbody>
+</table>
+
+    <table class="table thead-light">
+        <thead>
+            <tr>
+                <th scope="col">Tienda</th>
+                <th scope="col">ID Producto</th>
+                <th scope="col">Nombre Producto</th>
+                <th scope="col">Inventario</th>
+                <th scope="col">Acción</th>
+            </tr>
+        </thead>
+        <tbody id="cuerpoTabla">
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    let url = "http://localhost:3000/skater";
+    let tbody = document.getElementById("cuerpoTabla");
+
+    window.onload = getData();
+
+
+
+
+async function getData() {
+        await axios.get("/tiendas").then((response) => {
+            const tiendas = response.data;
+            let tienda = document.getElementById("tienda");
+            tienda.innerHTML = `<option>Seleccione</option>`;
+            tiendas.forEach((s, i) => {
+                tienda.innerHTML += `
+                                    <option>${s.store_name}</option>
+                                `;
+            });
+        });
+
+         await axios.get("/categorias").then((response) => {
+            const categorias = response.data;
+            let categoria = document.getElementById("categoria");
+            categoria.innerHTML = `<option>Seleccione</option>`;
+            categorias.forEach((s, i) => {
+                categoria.innerHTML += `
+                                    <option>${s.category_name}</option>
+                                `;
+            });
+        });
+
+        await axios.get("/marcas").then((response) => {
+            const marcas = response.data;
+            let marca = document.getElementById("marca");
+            marca.innerHTML = `<option>Seleccione</option>`;
+            marcas.forEach((s, i) => {
+                marca.innerHTML += `
+                                    <option>${s.brand_name}</option>
+                                `;
+            });
+        });
+    };
+
+
+ let botonBuscar = document.getElementById("btnBuscar");
+    botonBuscar.addEventListener('click', async(event) => {
+        event.preventDefault()
+        let tienda = document.getElementById("tienda").value;
+        let categoria = document.getElementById("categoria").value;
+        let marca = document.getElementById("marca").value;
+         let payload = {
+            tienda,
+            categoria,
+            marca
+        }
+        if (tienda != 'Seleccione' && categoria != 'Seleccione' && marca != 'Seleccione') {
+            await axios.get("/tdacatmarca", payload).then((response) => {
+            let datos = response.data;
+            tbody.innerHTML = "";
+            datos.forEach((s, i) => {
+                tbody.innerHTML += `
+                                    <tr>
+                                        <td>${s.store_name}</td>
+                                        <td>${s.product_id}</td>
+                                        <td>${s.product_name}</td>
+                                        <td>${s.inv}</td>
+                                        <td><button type="button" class="btn btn-primary">Ver</button></td>
+                                    </tr>
+                                `;
+            }); 
+
+            if (tienda != 'Seleccione' && categoria != 'Seleccione' && marca != 'Seleccione') {
+                await axios.get("/tdacatmarca", payload).then((response) => {
+                let datos = response.data;
+                tbody.innerHTML = "";
+                datos.forEach((s, i) => {
+                    tbody.innerHTML += `
+                                        <tr>
+                                            <td>${s.store_name}</td>
+                                            <td>${s.product_id}</td>
+                                            <td>${s.product_name}</td>
+                                            <td>${s.inv}</td>
+                                            <td><button type="button" class="btn btn-primary">Ver</button></td>
+                                        </tr>
+                                    `;
+                    });    
+                });
+            }   
+
+            if (tienda != 'Seleccione' && categoria != 'Seleccione' && marca === 'Seleccione') {
+                await axios.get("/tdacat", payload).then((response) => {
+                let datos = response.data;
+                tbody.innerHTML = "";
+                datos.forEach((s, i) => {
+                    tbody.innerHTML += `
+                                        <tr>
+                                            <td>${s.store_name}</td>
+                                            <td>${s.product_id}</td>
+                                            <td>${s.product_name}</td>
+                                            <td>${s.inv}</td>
+                                            <td><button type="button" class="btn btn-primary">Ver</button></td>
+                                        </tr>
+                                    `;
+                    });    
+                });
+            }
+
+            if (tienda != 'Seleccione' && categoria === 'Seleccione' && marca === 'Seleccione') {
+                await axios.get("/tienda", payload).then((response) => {
+                let datos = response.data;
+                tbody.innerHTML = "";
+                datos.forEach((s, i) => {
+                    tbody.innerHTML += `
+                                        <tr>
+                                            <td>${s.store_name}</td>
+                                            <td>${s.product_id}</td>
+                                            <td>${s.product_name}</td>
+                                            <td>${s.inv}</td>
+                                            <td><button type="button" class="btn btn-primary">Ver</button></td>
+                                        </tr>
+                                    `;
+                    });    
+                });
+            } 
+    });
+
+</script>
